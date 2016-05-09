@@ -79,6 +79,11 @@ function parseJSON(jString){
     },
     remainingJString: function(){
       return this.json.slice(this.position);
+    },
+    movePosition: function(num){
+      for(var x = 0; x < num; x++){
+        this.position += this.position < this.json.length ? 1 : 0;
+      }
     }
   };
   
@@ -104,7 +109,26 @@ function parseJSON(jString){
     
     // For booleans, null, undefined, NaN's
     var valueBuilder = function(){
-      
+      if(nextParse === "f"){
+        nextParse = stringTrack.nextChar();
+        if(nextParse !== "a"){
+          throw new SyntaxError("Unexpected token in JSON at position 1");
+        } else {
+          stringTrack.movePosition(3);
+          output = false;
+        }
+      }
+      if(nextParse === "t"){
+        stringTrack.movePosition(3);
+        output = true;
+      }
+      if(nextParse === "u"){
+        throw new SyntaxError("Unexpected token in JSON at position 0");
+      }
+      if(nextParse === "n"){
+        stringTrack.movePosition(3);
+        output = null;
+      }
     };
     
     var stringBuilder = function(){
